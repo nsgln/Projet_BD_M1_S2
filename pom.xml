@@ -5,7 +5,7 @@
     <modelVersion>4.0.0</modelVersion>
 
     <groupId>org.example</groupId>
-    <artifactId>ArangoDB_Java</artifactId>
+    <artifactId>ArangoDB_Project</artifactId>
     <version>1.0-SNAPSHOT</version>
 
     <dependencies>
@@ -14,6 +14,20 @@
             <artifactId>arangodb-java-driver</artifactId>
             <version>4.2.2</version>
         </dependency>
+
+        <dependency>
+            <groupId>org.slf4j</groupId>
+            <artifactId>slf4j-api</artifactId>
+            <version>1.7.5</version>
+        </dependency>
+        <dependency>
+            <groupId>org.slf4j</groupId>
+            <artifactId>slf4j-simple</artifactId>
+            <version>1.6.4</version>
+        </dependency>
+
     </dependencies>
+
+
 
 </project>
