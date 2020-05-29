@@ -25,8 +25,8 @@ public class Vendor {
 
 		//Create the collection if is not existing
 		try {
-			CollectionEntity invoiceCollection = arangoDB.db(dbName).createCollection(collectionName);
-			System.out.println("Collection created: " + invoiceCollection.getName());
+			CollectionEntity vendorCollection = arangoDB.db(dbName).createCollection(collectionName);
+			System.out.println("Collection created: " + vendorCollection.getName());
 		} catch (ArangoDBException arangoDBException) {
 			System.err.println("Failed to create collection: " + collectionName + "; " + arangoDBException.getMessage());
 		}
@@ -44,6 +44,7 @@ public class Vendor {
 			while ((line = readerProcess.readLine()) != null) {
 				output.append(line + "\n");
 			}
+			readerProcess.close();
 			int exitVal = process.waitFor();
 			if (exitVal == 0) {
 				System.out.println(output);

@@ -34,6 +34,7 @@ public class Invoice {
 			System.err.println("Failed to create collection: " + collectionName + "; " + arangoDBException.getMessage());
 		}
 
+		//Attention! Il faut ajouter ce fichier localement! Il est trop gros pour GitHub!
 		File xmlFile = new File("Data/Invoice/Invoice.xml");
 		try {
 			BufferedReader reader = new BufferedReader(new FileReader(xmlFile));
@@ -60,6 +61,7 @@ public class Invoice {
 					}
 				}
 			}
+			reader.close();
 			System.exit(0);
 
 		}catch (FileNotFoundException notFoundException){
