@@ -14,9 +14,9 @@ public class AddBrandToProduct {
     }
 
     //méthode permettant d'écrire les données dans le csv en y ajoutant les brands
-    private static void writeCSV(HashMap<String, String> brands, String[] attributes, String data, String nameOfFile, boolean first) throws IOException {
+    private static void writeCSV(HashMap<String, String> brands, String[] attributes, String data, String writeTo, boolean first) throws IOException {
 
-        FileWriter csvWriter = new FileWriter("C:\\Users\\Romain\\Desktop\\BD S2\\PROJET_NOSQL_2019_2020\\NEWDATA\\Product\\" + nameOfFile + ".csv", true);
+        FileWriter csvWriter = new FileWriter(writeTo, true);
         if(first) {
             csvWriter.append("_key");
             csvWriter.append(",");
@@ -52,13 +52,17 @@ public class AddBrandToProduct {
 
     public static void main(String[] args) {
         BufferedReader reader;
-        String PRODUCT = "Product";
-        String BRAND = "BrandByProduct";
+
+        String from_path_product = "C:\\Users\\Romain\\Desktop\\BD S2\\PROJET_NOSQL_2019_2020\\DATA\\Product\\Product.csv";
+        String from_path_brand= "C:\\Users\\Romain\\Desktop\\BD S2\\PROJET_NOSQL_2019_2020\\DATA\\Product\\BrandByProduct.csv";
+
+        String to_path = "C:\\Users\\Romain\\Desktop\\BD S2\\PROJET_NOSQL_2019_2020\\NEWDATA\\Product\\Product.csv";
+
         HashMap<String, String> brandsbyAsin= new HashMap<String, String>();
 
         try{
 
-            reader = new BufferedReader(new FileReader("C:\\Users\\Romain\\Desktop\\BD S2\\PROJET_NOSQL_2019_2020\\DATA\\Product\\" + BRAND + ".csv"));
+            reader = new BufferedReader(new FileReader(from_path_brand));
             String line = reader.readLine();
             System.out.println("lecture et sauvegarde en cours...");
             while(line != null){
@@ -71,13 +75,13 @@ public class AddBrandToProduct {
         }
 
         try{
-            BufferedReader csvReader = new BufferedReader(new FileReader("C:\\Users\\Romain\\Desktop\\BD S2\\PROJET_NOSQL_2019_2020\\DATA\\Product\\" + PRODUCT + ".csv"));
+            BufferedReader csvReader = new BufferedReader(new FileReader(from_path_product));
             String row;
             row = csvReader.readLine();
             String[] attributes = row.split(",");
             boolean first = true;
             while ((row = csvReader.readLine()) != null) {
-                writeCSV(brandsbyAsin, attributes, row, PRODUCT, first);
+                writeCSV(brandsbyAsin, attributes, row, to_path, first);
                 first = false;
             }
             csvReader.close();

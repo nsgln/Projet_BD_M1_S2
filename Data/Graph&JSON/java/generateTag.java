@@ -27,9 +27,9 @@ public class generateTag {
     }
 
     //on écrit dans un nouveau fichier
-    private static void writeJSON(JSONObject object, String nameOfFile) {
+    private static void writeJSON(JSONObject object, String pathToWrite) {
         try {
-            BufferedWriter write=new BufferedWriter(new FileWriter("C:\\Users\\Romain\\Desktop\\BD S2\\PROJET_NOSQL_2019_2020\\NEWDATA\\SocialNetwork\\" + nameOfFile + ".json", true));
+            BufferedWriter write=new BufferedWriter(new FileWriter(pathToWrite, true));
             write.write(object.toString());
             write.newLine();
             write.flush();
@@ -42,18 +42,18 @@ public class generateTag {
     //L'idée est de générer le fichier TAG inexistant à partir des ids des relations (edges)
     public static void main(String[] args) {
 
-        BufferedReader reader;
+        String from_path_hasInterest = "C:\\Users\\Romain\\Desktop\\BD S2\\PROJET_NOSQL_2019_2020\\DATA\\SocialNetwork\\person_hasInterest_tag_0_0.csv";
+        String from_path_hasTag = "C:\\Users\\Romain\\Desktop\\BD S2\\PROJET_NOSQL_2019_2020\\DATA\\SocialNetwork\\post_hasTag_tag_0_0.csv";
 
-        String TAG = "tag_0_0";
+        String to_path_Tag = "C:\\Users\\Romain\\Desktop\\BD S2\\PROJET_NOSQL_2019_2020\\NEWDATA\\SocialNetwork\\tag_0_0.json";
+
         ArrayList<String> tag_ids = new ArrayList<String>();
 
-
-        //d'abord interest
-        String HAS_INTEREST = "person_hasInterest_tag_0_0";
+        //on récupère les ids dans hasInterest
+        BufferedReader reader;
         try{
-            reader = new BufferedReader(new FileReader("C:\\Users\\Romain\\Desktop\\BD S2\\PROJET_NOSQL_2019_2020\\DATA\\SocialNetwork\\" + HAS_INTEREST + ".csv"));
+            reader = new BufferedReader(new FileReader(from_path_hasInterest));
             String line = reader.readLine();
-            String attributes = line;
             line = reader.readLine();
             System.out.println("Enregistrement des ids... 1/2");
             while(line != null){
@@ -61,16 +61,14 @@ public class generateTag {
                 if(!tag_ids.contains(id)) tag_ids.add(id);
                 line = reader.readLine();
             }
-
             reader.close();
         }catch(IOException e) {
             e.printStackTrace();
         }
 
-        String HAS_TAG = "post_hasTag_tag_0_0";
-
+        //on récupère les ids dans hastag
         try{
-            reader = new BufferedReader(new FileReader("C:\\Users\\Romain\\Desktop\\BD S2\\PROJET_NOSQL_2019_2020\\DATA\\SocialNetwork\\" + HAS_TAG + ".csv"));
+            reader = new BufferedReader(new FileReader(from_path_hasTag));
             String line = reader.readLine();
             String attributes = line;
             line = reader.readLine();
@@ -88,7 +86,7 @@ public class generateTag {
 
         System.out.println("Conversion en cours");
         for(int i=0; i< tag_ids.size(); i++) {
-            writeJSON(convertToJSON(tag_ids.get(i)), TAG);
+            writeJSON(convertToJSON(tag_ids.get(i)), to_path_Tag);
         }
         System.out.println("Conversion finie !");
     }
