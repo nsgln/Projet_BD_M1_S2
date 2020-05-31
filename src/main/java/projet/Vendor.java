@@ -2,6 +2,7 @@ package projet;
 
 import com.arangodb.ArangoDB;
 import com.arangodb.ArangoDBException;
+import com.arangodb.entity.BaseDocument;
 import com.arangodb.entity.CollectionEntity;
 
 import java.io.BufferedReader;
@@ -49,10 +50,29 @@ public class Vendor {
 			if (exitVal == 0) {
 				System.out.println(output);
 				System.out.println("Success!");
-				System.exit(0);
 			} else {
 				System.out.println("Trouble");
 			}
+
+			//Mise à jour des données en Java.
+			//Insertion d'un nouveau document!
+			BaseDocument toAdd = new BaseDocument();
+			toAdd.addAttribute("Vendor", "Nike");
+			toAdd.addAttribute("Country", "France");
+			toAdd.addAttribute("Industry", "Sports");
+			arangoDB.db(dbName).collection(collectionName).insertDocument(toAdd);
+			System.out.println("Document inserted");
+			String keyOfObject = toAdd.getKey();
+
+			//Modification
+			BaseDocument toUpdate = arangoDB.db(dbName).collection(collectionName).getDocument(keyOfObject,
+					BaseDocument.class);
+			toUpdate.updateAttribute("Country", "Brazil");
+			System.out.println("Document modified");
+
+			//Suppression.
+			arangoDB.db(dbName).collection(collectionName).deleteDocument(keyOfObject);
+			System.out.println("Document deleted.");
 		} catch (IOException ioException) {
 			ioException.printStackTrace();
 		} catch (InterruptedException interruptedException){

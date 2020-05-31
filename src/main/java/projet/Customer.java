@@ -2,6 +2,7 @@ package projet;
 
 import com.arangodb.ArangoDB;
 import com.arangodb.ArangoDBException;
+import com.arangodb.entity.BaseDocument;
 import com.arangodb.entity.CollectionEntity;
 
 import java.io.*;
@@ -69,10 +70,37 @@ public class Customer {
 			if (exitVal == 0) {
 				System.out.println(output);
 				System.out.println("Success!");
-				System.exit(0);
 			} else {
 				System.out.println("Trouble");
 			}
+
+			//Mise à jour des données en Java.
+			//Insertion d'un nouveau document!
+			BaseDocument toAdd = new BaseDocument();
+			toAdd.addAttribute("id", "789098");
+			toAdd.setKey("789098");
+			toAdd.addAttribute("firstName", "Nina");
+			toAdd.addAttribute("lastName", "Singlan");
+			toAdd.addAttribute("gender", "female");
+			toAdd.addAttribute("birthday", "1998-02-09");
+			toAdd.addAttribute("creationDate", "2020-05-31T22:43:26.134+0000");
+			toAdd.addAttribute("locationIP", "192.160.128.234");
+			toAdd.addAttribute("browserUsed", "Chrome");
+			toAdd.addAttribute("place", 611);
+			arangoDB.db(dbName).collection(collectionName).insertDocument(toAdd);
+			System.out.println("Document inserted");
+			String keyOfObject = toAdd.getKey();
+
+			//Modification
+			BaseDocument toUpdate = arangoDB.db(dbName).collection(collectionName).getDocument(keyOfObject,
+					BaseDocument.class);
+			toUpdate.updateAttribute("firstName", "Renée");
+			System.out.println("Document modified");
+
+			//Suppression.
+			arangoDB.db(dbName).collection(collectionName).deleteDocument(keyOfObject);
+			System.out.println("Document deleted.");
+
 		} catch (InterruptedException interruptedException) {
 			interruptedException.printStackTrace();
 		} catch (IOException ioException) {
