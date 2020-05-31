@@ -35,9 +35,9 @@ public class GraphToJSON {
     }
 
     //Méthode permettant d'écrire le nouveau fichier avec le format json
-    private static void writeJSON(JSONObject object, String nameOfFile) {
+    private static void writeJSON(JSONObject object, String pathToWrite) {
         try {
-            BufferedWriter write=new BufferedWriter(new FileWriter("C:\\Users\\Romain\\Desktop\\BD S2\\PROJET_NOSQL_2019_2020\\NEWDATA\\SocialNetwork\\" + nameOfFile + ".json", true));
+            BufferedWriter write=new BufferedWriter(new FileWriter(pathToWrite, true));
             write.write(object.toString());
             write.newLine();
             write.flush();
@@ -50,6 +50,7 @@ public class GraphToJSON {
 
     public static void main(String[] args) {
         BufferedReader reader;
+
         String POST = "post_0_0";
         String PERSON = "person_0_0";
         String P_KNOWS_P = "person_knows_person_0_0";
@@ -60,15 +61,18 @@ public class GraphToJSON {
         String HAS_INTEREST = "person_hasInterest_tag_0_0";
         String HAS_TAG = "post_hasTag_tag_0_0";
 
+        String from_path = "C:\\Users\\Romain\\Desktop\\BD S2\\PROJET_NOSQL_2019_2020\\DATA\\SocialNetwork\\" + HAS_INTEREST + ".csv";
+        String to_path = "C:\\Users\\Romain\\Desktop\\BD S2\\PROJET_NOSQL_2019_2020\\NEWDATA\\SocialNetwork\\" + HAS_INTEREST + ".json";
+
          try{
 
-            reader = new BufferedReader(new FileReader("C:\\Users\\Romain\\Desktop\\BD S2\\PROJET_NOSQL_2019_2020\\DATA\\SocialNetwork\\" + HAS_INTEREST + ".csv"));
+            reader = new BufferedReader(new FileReader(from_path));
             String line = reader.readLine();
             String attributes = line;
             line = reader.readLine();
             System.out.println("Conversion en cours...");
             while(line != null){
-                writeJSON(jsonTransformation(attributes, line, true), HAS_INTEREST);
+                writeJSON(jsonTransformation(attributes, line, true), to_path);
                 line = reader.readLine();
             }
             System.out.println("Conversion finie !");

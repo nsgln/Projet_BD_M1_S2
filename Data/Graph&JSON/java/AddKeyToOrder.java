@@ -7,12 +7,10 @@ import java.io.*;
 public class AddKeyToOrder {
 
 
-
-        //on écrit dans un nouveau fichier
-        private static void writeJSONwithKey(String key, JSONObject object, String nameOfFile) {
-
+        //on écrit dans un nouveau fichier en y ajoutant la key = OrderId
+        private static void writeJSONwithKey(String key, JSONObject object, String pathToWrite) {
             try {
-                BufferedWriter write=new BufferedWriter(new FileWriter("C:\\Users\\Romain\\Desktop\\BD S2\\PROJET_NOSQL_2019_2020\\NEWDATA\\Order\\" + nameOfFile + ".json", true));
+                BufferedWriter write=new BufferedWriter(new FileWriter(pathToWrite, true));
                 object.put("_key", key);
                 write.write(object.toString());
                 write.newLine();
@@ -23,32 +21,30 @@ public class AddKeyToOrder {
             }
         }
 
-        //L'idée est de générer le fichier TAG inexistant à partir des ids des relations (edges)
+        //L'idée est d'ajouter le champ _key au fichier Order.json
         public static void main(String[] args) {
 
+            String from_path = "C:\\Users\\Romain\\Desktop\\BD S2\\PROJET_NOSQL_2019_2020\\DATA\\Order\\Order.json";
+            String to_path = "C:\\Users\\Romain\\Desktop\\BD S2\\PROJET_NOSQL_2019_2020\\NEWDATA\\Order\\Order.json";
 
-            String ORDER = "Order";
             BufferedReader br = null;
             JSONParser parser = new JSONParser();
             try {
 
                 String sCurrentLine;
-
-                br = new BufferedReader(new FileReader("C:\\Users\\Romain\\Desktop\\BD S2\\PROJET_NOSQL_2019_2020\\DATA\\Order\\" + ORDER + ".json"));
+                System.out.println("Ecriture en cours...");
+                br = new BufferedReader(new FileReader(from_path));
                 while ((sCurrentLine = br.readLine()) != null) {
-                    System.out.println("Record:\t" + sCurrentLine);
                     Object obj;
                     try {
                         obj = parser.parse(sCurrentLine);
                         JSONObject jsonObject = (JSONObject) obj;
-                        writeJSONwithKey((String) jsonObject.get("OrderId"), jsonObject, ORDER);
-
+                        writeJSONwithKey((String) jsonObject.get("OrderId"), jsonObject, to_path);
                     } catch (ParseException e) {
                         // TODO Auto-generated catch block
                         e.printStackTrace();
                     }
                 }
-
             } catch (IOException e) {
                 e.printStackTrace();
             } finally {
@@ -58,7 +54,6 @@ public class AddKeyToOrder {
                     ex.printStackTrace();
                 }
             }
-
             System.out.println("Ajout fini !");
         }
     }
