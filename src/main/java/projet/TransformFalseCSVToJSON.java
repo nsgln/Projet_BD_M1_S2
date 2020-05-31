@@ -31,6 +31,9 @@ public class TransformFalseCSVToJSON {
 		JSONObject newJSONObject = new JSONObject();
 		for(int i=0; i<jsonAttributes.length; i++) {
 			newJSONObject.put(jsonAttributes[i], objectsFromLine[i]);
+			if(jsonAttributes[i].equals("id")){
+				newJSONObject.put("_key", objectsFromLine[i]);
+			}
 		}
 
 		return newJSONObject;
