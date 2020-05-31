@@ -3,24 +3,40 @@ package projet;
 import com.arangodb.ArangoCollection;
 import com.arangodb.ArangoDB;
 import com.arangodb.ArangoDBException;
+import com.arangodb.entity.BaseDocument;
 import com.arangodb.entity.CollectionEntity;
 
 import java.io.*;
 import java.util.ArrayList;
 
 import com.arangodb.entity.DocumentCreateEntity;
-import org.json.JSONException;
-import org.json.JSONObject;
+import org.json.simple.JSONArray;
+
+
+import java.io.BufferedReader;
+import java.io.FileReader;
+import java.io.IOException;
+
+import org.json.simple.JSONObject;
+import org.json.simple.parser.JSONParser;
+import org.json.simple.parser.ParseException;
 
 public class Feedback {
+
+    public static BaseDocument copieDoc(BaseDocument doc) {
+        BaseDocument copie = new BaseDocument();
+        copie.addAttribute("PersonId", doc.getAttribute("PersonId").toString());
+        copie.addAttribute("feedback", doc.getAttribute("feedback").toString());
+        return copie;
+    }
 
     public static void toJSON(File feedbackFile, File feedbackFileJSON) {
         if (!feedbackFileJSON.exists()) {
             try {
                 final String SEPARATEUR = "\\|";
-                String attributes = "asin|PersonId|feedback";
-                String[] jsonAttributes = attributes.split(SEPARATEUR);
                 String[] objectsFromLine;
+                JSONObject newJSONObject;
+                JSONArray array = new JSONArray();
                 BufferedReader reader = new BufferedReader(new FileReader(feedbackFile));
                 BufferedWriter write = new BufferedWriter(new FileWriter(feedbackFileJSON, true));
                 System.out.println("**********CONVERSION EN COURS**********");
@@ -31,30 +47,40 @@ public class Feedback {
                     debut = true;
                     objectsFromLine = line.split(SEPARATEUR);
                     asin = objectsFromLine[0];
-                    JSONObject newJSONObject = new JSONObject();
-                    newJSONObject.put(jsonAttributes[1], objectsFromLine[1]);
-                    newJSONObject.put(jsonAttributes[2], objectsFromLine[2]);
-                    write.write("{\"_key\":\"" + objectsFromLine[0] + "\", \"" + jsonAttributes[0] + "\":\"" + objectsFromLine[0] + "\", \"values\":[" +  newJSONObject);
+                    JSONObject val = new JSONObject();
+                    val.put("PersonId", objectsFromLine[1]);
+                    val.put("feedback", objectsFromLine[2]);
+                    array.add(val);
                     line = reader.readLine();
                 }
                 while (line != null) {
                     objectsFromLine = line.split(SEPARATEUR);
-                    JSONObject newJSONObject = new JSONObject();
-                    newJSONObject.put(jsonAttributes[1], objectsFromLine[1]);
-                    newJSONObject.put(jsonAttributes[2], objectsFromLine[2]);
+                    JSONObject val = new JSONObject();
+                    val.put("PersonId", objectsFromLine[1]);
+                    val.put("feedback", objectsFromLine[2]);
                     if (objectsFromLine[0].equals(asin)) {
-                        write.write(", " + newJSONObject);
+                        array.add(val);
                     } else {
-                        asin = objectsFromLine[0];
-                        write.write("]}");
+                        newJSONObject = new JSONObject();
+                        newJSONObject.put("_key", asin);
+                        newJSONObject.put("_id", asin);
+                        newJSONObject.put("asin", asin);
+                        newJSONObject.put("values", array);
+                        write.write(newJSONObject.toString());
                         write.newLine();
-                        write.write("{\"_key\":\"" + objectsFromLine[0] + "\", \"" + jsonAttributes[0] + "\":\"" + objectsFromLine[0] + "\", \"values\":[" +  newJSONObject);
-                    }
+                        asin = objectsFromLine[0];
+                        array = new JSONArray();
+                        array.add(val);                    }
                     line = reader.readLine();
 
                 }
                 if (debut) {
-                    write.write("]}");
+                    newJSONObject = new JSONObject();
+                    newJSONObject.put("_key", asin);
+                    newJSONObject.put("_id", asin);
+                    newJSONObject.put("asin", asin);
+                    newJSONObject.put("values", array);
+                    write.write(newJSONObject.toString());
                 }
                 write.newLine();
                 write.flush();
@@ -65,10 +91,7 @@ public class Feedback {
                 notFoundException.printStackTrace();
             } catch (IOException ioException) {
                 ioException.printStackTrace();
-            } catch (JSONException jsonException){
-            jsonException.printStackTrace();
-        }
-
+            }
         }
     }
     public static void main(final String[] args) {
@@ -91,6 +114,7 @@ public class Feedback {
         } catch (ArangoDBException arangoDBException) {
             arangoDB.db(dbName).collection(collectionName).drop();
             System.err.println("Failed to create collection: " + collectionName + "; " + arangoDBException.getMessage());
+            arangoDB.db(dbName).createCollection(collectionName);
         }
 
         File feedbackFile = new File("Data/Feedback/feedback.csv");
@@ -103,15 +127,46 @@ public class Feedback {
         try {
             BufferedReader reader = new BufferedReader(new FileReader(feedbackFileJSON));
             String lineRead;
+            JSONParser parser = new JSONParser();
+
+            Object obj;
+            Object ar;
+            BaseDocument toAdd;
+            BaseDocument inArray;
+            ArrayList array;
 
             System.out.println("**********READING FILE**********");
 
             while ((lineRead = reader.readLine()) != null) {
-                ArangoCollection collection = arangoDB.db(dbName).collection(collectionName);
-                DocumentCreateEntity<String> entity = collection.insertDocument(lineRead);
-                String key = entity.getKey();
-                keys.add(key);
-                System.out.println(key);
+                try {
+                    obj = parser.parse(lineRead);
+                    JSONObject jsonObject = (JSONObject) obj;
+                    toAdd = new BaseDocument();
+                    array = new ArrayList();
+
+                    toAdd.setKey(jsonObject.get("_key").toString());
+                    toAdd.addAttribute("asin", jsonObject.get("asin").toString());
+
+                    ar = jsonObject.get("values");
+                    JSONArray jasonAr = (JSONArray) ar;
+                    for (Object inAr : jasonAr) {
+                        JSONObject jasonInAr = (JSONObject) inAr;
+                        inArray = new BaseDocument();
+                        inArray.addAttribute("PersonId", jasonInAr.get("PersonId"));
+                        inArray.addAttribute("feedback", jasonInAr.get("feedback"));
+                        array.add(copieDoc(inArray));
+                    }
+                    toAdd.addAttribute("values", array);
+                    ArangoCollection collection = arangoDB.db(dbName).collection(collectionName);
+                    collection.insertDocument(toAdd);
+                    System.out.println("Document inserted : " + toAdd.getKey());
+                    /*for (BaseDocument d : (ArrayList<BaseDocument>)toAdd.getAttribute("values")) {
+                        System.out.println(d.getAttribute("PersonId"));
+                    }*/
+                }
+                catch (ParseException e) {
+                    e.printStackTrace();
+                }
             }
             reader.close();
             System.exit(0);
