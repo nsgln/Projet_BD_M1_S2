@@ -73,6 +73,8 @@ public class Vendor {
 			//Suppression.
 			arangoDB.db(dbName).collection(collectionName).deleteDocument(keyOfObject);
 			System.out.println("Document deleted.");
+
+			System.exit(0);
 		} catch (IOException ioException) {
 			ioException.printStackTrace();
 		} catch (InterruptedException interruptedException){

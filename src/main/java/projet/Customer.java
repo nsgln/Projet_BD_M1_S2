@@ -99,7 +99,8 @@ public class Customer {
 
 			//Suppression.
 			arangoDB.db(dbName).collection(collectionName).deleteDocument(keyOfObject);
-			System.out.println("Document deleted.");
+
+			System.exit(0);
 
 		} catch (InterruptedException interruptedException) {
 			interruptedException.printStackTrace();
