@@ -100,6 +100,28 @@ public class Customer {
 			//Suppression.
 			arangoDB.db(dbName).collection(collectionName).deleteDocument(keyOfObject);
 
+			//Insertion d'un nouveau document!
+			BaseDocument otherToAdd = new BaseDocument();
+			toAdd.addAttribute("id", "789078");
+			toAdd.setKey("789078");
+			toAdd.addAttribute("firstName", "Romain");
+			toAdd.addAttribute("lastName", "Michelucci");
+			toAdd.addAttribute("gender", "male");
+			toAdd.addAttribute("birthday", "1997-08-01");
+			toAdd.addAttribute("creationDate", "2020-05-29T22:43:22.134+0000");
+			toAdd.addAttribute("locationIP", "192.160.121.234");
+			toAdd.addAttribute("browserUsed", "Firefox");
+			toAdd.addAttribute("place", 802);
+			arangoDB.db(dbName).collection(collectionName).insertDocument(toAdd);
+			System.out.println("Document inserted");
+			String otherKeyOfObject = toAdd.getKey();
+
+			//Modification
+			BaseDocument otherToUpdate = arangoDB.db(dbName).collection(collectionName).getDocument(otherKeyOfObject,
+					BaseDocument.class);
+			toUpdate.updateAttribute("place", 301);
+			System.out.println("Document modified");
+
 			System.exit(0);
 
 		} catch (InterruptedException interruptedException) {

@@ -74,6 +74,21 @@ public class Vendor {
 			arangoDB.db(dbName).collection(collectionName).deleteDocument(keyOfObject);
 			System.out.println("Document deleted.");
 
+			//Insertion d'un nouveau document!
+			BaseDocument otherToAdd = new BaseDocument();
+			toAdd.addAttribute("Vendor", "Nike");
+			toAdd.addAttribute("Country", "Italia");
+			toAdd.addAttribute("Industry", "Sports");
+			arangoDB.db(dbName).collection(collectionName).insertDocument(toAdd);
+			System.out.println("Document inserted");
+			String otherKeyOfObject = toAdd.getKey();
+
+			//Modification
+			BaseDocument otherToUpdate = arangoDB.db(dbName).collection(collectionName).getDocument(keyOfObject,
+					BaseDocument.class);
+			toUpdate.updateAttribute("Vendor", "Adidas");
+			System.out.println("Document modified");
+
 			System.exit(0);
 		} catch (IOException ioException) {
 			ioException.printStackTrace();
