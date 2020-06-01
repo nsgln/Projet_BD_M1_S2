@@ -12,17 +12,17 @@ import java.util.HashMap;
 import java.util.Map;
 
 public class Queries {
-    public static void main(String[] args) {
+    // Query 1 la date est rentree en dur pour des raisons techiques
+    // et la periode de temps est passee de 6 mois a 6 mois pour obtenir des resultats plus parlants.
+    // La periode de temps est commentee pour les posts pour avoir des resultats
+    // Le client considere est celui de cle 21990232560182.
+    // La partie sur la categorie des produits n'est pas faite car pas comprise
+    public static void querry1() {
         ArangoDB arango = new ArangoDB.Builder().build();
         ArangoDatabase db = arango.db("projet");
-
-        // Query 1 la date est rentree en dur pour des raisons techiques
-        // et la periode de temps est passee de 6 mois a 6 mois pour obtenir des resultats plus parlants.
-        // La periode de temps est commentee pour les posts pour avoir des resultats
-        // Le client considere est celui de cle 21990232560182.
-        // La partie sur la categorie des produits n'est pas faite car pas comprise
         try {
             System.out.println("Query 1 : BEGINNING");
+            HashMap<String, Integer> tags = new HashMap<>();
             String query = "FOR c IN customer FILTER c._key == @key RETURN c";
             Map<String, Object> bindVars = new MapBuilder().put("key", "21990232560182").get();
             ArangoCursor<BaseDocument> cursor = db.query(query, bindVars, null, BaseDocument.class);
@@ -128,6 +128,28 @@ public class Queries {
                             System.out.println("        browserUsed: " + gDocument.getAttribute("browserUsed"));
                             System.out.println("        content: " + gDocument.getAttribute("content"));
                             System.out.println("        length: " + gDocument.getAttribute("length"));
+                            final String query8 = "FOR pHt in post_hasTag_tag " +
+                                    "FILTER pHt._from == @post " + //AND po.CreateDate <= \"2020-06-01\" AND po.CreateDate >= DATE_SUBTRACT(\"2020-06-01\", 6, \"month\") " +
+                                    "RETURN pHt";
+                            Map<String, Object> bindVars8 = new MapBuilder().put("post", gDocument.getId()).get();
+                            final ArangoCursor<BaseDocument> cursor8 = db.query(query8, bindVars8, null, BaseDocument.class);
+                            cursor8.forEachRemaining(hDocument -> {
+                                final String query9 = "FOR t in Tag " +
+                                        "FILTER t._id == @tag " + //AND po.CreateDate <= \"2020-06-01\" AND po.CreateDate >= DATE_SUBTRACT(\"2020-06-01\", 6, \"month\") " +
+                                        "RETURN t";
+                                Map<String, Object> bindVars9 = new MapBuilder().put("tag", hDocument.getAttribute("_to")).get();
+                                final ArangoCursor<BaseDocument> cursor9 = db.query(query9, bindVars9, null, BaseDocument.class);
+                                cursor9.forEachRemaining(iDocument -> {
+                                    String tag = iDocument.getAttribute("id").toString();
+                                    if(tags.containsKey(tag)) {
+                                        int nb = tags.get(tag);
+                                        tags.put(tag, nb + 1);
+                                    }
+                                    else {
+                                        tags.put(tag, 1);
+                                    }
+                                });
+                            });
                         });
                     });
 
@@ -135,21 +157,31 @@ public class Queries {
                 });
 
             });
+            ArrayList<String> mostTags = new ArrayList<>();
+            int max = 0;
+            if (!tags.isEmpty()) {
+                for (String key : tags.keySet()) {
+                    if (tags.get(key) >= max) {
+                        max = tags.get(key);
+                    }
+                }
+                for (String key : tags.keySet()) {
+                    if (tags.get(key) == max) {
+                        mostTags.add(key);
+                    }
+                }
+                for (String s : mostTags) {
+                    System.out.println("Tag mostly used : " + s + " with " + max + " utilisations");
+                }
+            }
             System.out.println("Query 1 END");
         } catch (ArangoDBException e) {
             System.err.println("Failed to execute query. " + e.getMessage());
         }
+    }
 
-
-	/* Exemple query java
-	ArangoDB arango = new ArangoDB.Builder().build();
-	ArangoDatabase db = arango.db("myDB");
-	ArangoCursor<BaseDocument> cursor = db.query(
-  		"FOR i IN @@collection RETURN i"
-  		new MapBuilder().put("@collection", "myCollection").get(),
-  		new AqlQueryOptions(),
-  		BaseDocument.class);
-  	*/
+    public static void main(String[] args) {
+        querry1();
     }
 
     //Fonctionne pas, le run s'arrête pas
