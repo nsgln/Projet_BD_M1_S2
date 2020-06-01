@@ -14,7 +14,6 @@ import org.json.simple.JSONArray;
 import java.io.BufferedReader;
 import java.io.FileReader;
 import java.io.IOException;
-import java.util.HashMap;
 
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
@@ -25,25 +24,44 @@ public class Feedback {
     public static void addFeedback(String dbName, String collectionName, String asin, String PersonId, String feedback) {
         ArangoDB arangoDB = new ArangoDB.Builder().build();
 
+        //Create database, if is not existing
+        try {
+            arangoDB.createDatabase(dbName);
+            System.out.println("Database created: " + dbName);
+        } catch (ArangoDBException e) {
+            System.err.println("Failed to create database: " + dbName + "; " + e.getMessage());
+        }
+
+        //Create the collection if is not existing
+        try {
+            CollectionEntity feedbackCollection = arangoDB.db(dbName).createCollection(collectionName);
+            System.out.println("Collection created: " + feedbackCollection.getName());
+        } catch (ArangoDBException arangoDBException) {
+            arangoDB.db(dbName).collection(collectionName).drop();
+            System.err.println("Failed to create collection: " + collectionName + "; " + arangoDBException.getMessage());
+            arangoDB.db(dbName).createCollection(collectionName);
+        }
+
         BaseDocument toAdd = new BaseDocument();
         toAdd.setKey(asin);
         toAdd.addAttribute("asin", asin);
         ArrayList arrayToAdd = new ArrayList();
         BaseDocument toAddArray = new BaseDocument();
         toAddArray.addAttribute("PersonId", PersonId);
-        toAddArray.addAttribute("feedback", feedback);
+        toAdd.addAttribute("feedback", feedback);
         arrayToAdd.add(toAddArray);
         toAdd.addAttribute("values", arrayToAdd);
+        ArangoCollection collection = arangoDB.db(dbName).collection(collectionName);
 
         //Try if the asin is already in the collection
         try {
-            arangoDB.db(dbName).collection(collectionName).insertDocument(toAdd);
+            collection.insertDocument(toAdd);
             System.out.println("Insert done : " + asin + " with PersonId : " + PersonId + " has been inserted");
         }
         catch (ArangoDBException e) {
             try {
-                BaseDocument doc = arangoDB.db(dbName).collection(collectionName).getDocument(asin, BaseDocument.class);
-                ArrayList<BaseDocument> array = (ArrayList<BaseDocument>)doc.getAttribute("values");
+                BaseDocument doc = collection.getDocument(asin, BaseDocument.class);
+                ArrayList<BaseDocument> array = (ArrayList<BaseDocument>)toAdd.getAttribute("values");
                 array.add(toAddArray);
                 doc.updateAttribute("values", array);
                 System.out.println("Insert done : " + asin + " with PersonId : " + PersonId + " has been inserted");
@@ -57,16 +75,36 @@ public class Feedback {
     public static void updateFeedback(String dbName, String collectionName, String asin, String PersonId, String feedback, String newPersonId, String newFeedback) {
         ArangoDB arangoDB = new ArangoDB.Builder().build();
 
-        HashMap modif = new HashMap();
-        modif.put("PersonId", newPersonId);
-        modif.put("feedback", feedback);
+        //Create database, if is not existing
+        try {
+            arangoDB.createDatabase(dbName);
+            System.out.println("Database created: " + dbName);
+        } catch (ArangoDBException e) {
+            System.err.println("Failed to create database: " + dbName + "; " + e.getMessage());
+        }
+
+        //Create the collection if is not existing
+        try {
+            CollectionEntity feedbackCollection = arangoDB.db(dbName).createCollection(collectionName);
+            System.out.println("Collection created: " + feedbackCollection.getName());
+        } catch (ArangoDBException arangoDBException) {
+            arangoDB.db(dbName).collection(collectionName).drop();
+            System.err.println("Failed to create collection: " + collectionName + "; " + arangoDBException.getMessage());
+            arangoDB.db(dbName).createCollection(collectionName);
+        }
+
+        BaseDocument modif = new BaseDocument();
+        modif.setKey(asin);
+        modif.addAttribute("PersonId", newPersonId);
+        modif.addAttribute("feedback", feedback);
+        ArangoCollection collection = arangoDB.db(dbName).collection(collectionName);
 
         //Find the feedback and modify it in the collection
         try {
-            BaseDocument doc = arangoDB.db(dbName).collection(collectionName).getDocument(asin, BaseDocument.class);
-            ArrayList<HashMap> array = (ArrayList<HashMap>)doc.getAttribute("values");
-            for (HashMap d : array) {
-                if (d.get("PersonId").equals(PersonId) && d.get("feedback").equals(feedback)){
+            BaseDocument doc = collection.getDocument(asin, BaseDocument.class);
+            ArrayList<BaseDocument> array = (ArrayList<BaseDocument>)doc.getAttribute("values");
+            for (BaseDocument d : array) {
+                if (d.getAttribute("PersonID").equals(PersonId) && d.getAttribute("feedback").equals(feedback)){
                     array.remove(d);
                     array.add(modif);
                 }
@@ -81,9 +119,30 @@ public class Feedback {
 
     public static void deleteFeedback(String dbName, String collectionName, String asin) {
         ArangoDB arangoDB = new ArangoDB.Builder().build();
+
+        //Create database, if is not existing
+        try {
+            arangoDB.createDatabase(dbName);
+            System.out.println("Database created: " + dbName);
+        } catch (ArangoDBException e) {
+            System.err.println("Failed to create database: " + dbName + "; " + e.getMessage());
+        }
+
+        //Create the collection if is not existing
+        try {
+            CollectionEntity feedbackCollection = arangoDB.db(dbName).createCollection(collectionName);
+            System.out.println("Collection created: " + feedbackCollection.getName());
+        } catch (ArangoDBException arangoDBException) {
+            arangoDB.db(dbName).collection(collectionName).drop();
+            System.err.println("Failed to create collection: " + collectionName + "; " + arangoDBException.getMessage());
+            arangoDB.db(dbName).createCollection(collectionName);
+        }
+
+        ArangoCollection collection = arangoDB.db(dbName).collection(collectionName);
+
         //Find the feedback and delete it
         try {
-            arangoDB.db(dbName).collection(collectionName).deleteDocument(asin);
+            collection.deleteDocument(asin);
             System.out.println("Deletion done : " + asin);
         }
         catch (ArangoDBException e) {
@@ -94,17 +153,37 @@ public class Feedback {
     public static void deleteFeedback(String dbName, String collectionName, String asin, String PersonId, String feedback) {
         ArangoDB arangoDB = new ArangoDB.Builder().build();
 
+        //Create database, if is not existing
+        try {
+            arangoDB.createDatabase(dbName);
+            System.out.println("Database created: " + dbName);
+        } catch (ArangoDBException e) {
+            System.err.println("Failed to create database: " + dbName + "; " + e.getMessage());
+        }
+
+        //Create the collection if is not existing
+        try {
+            CollectionEntity feedbackCollection = arangoDB.db(dbName).createCollection(collectionName);
+            System.out.println("Collection created: " + feedbackCollection.getName());
+        } catch (ArangoDBException arangoDBException) {
+            arangoDB.db(dbName).collection(collectionName).drop();
+            System.err.println("Failed to create collection: " + collectionName + "; " + arangoDBException.getMessage());
+            arangoDB.db(dbName).createCollection(collectionName);
+        }
+
+        ArangoCollection collection = arangoDB.db(dbName).collection(collectionName);
+
         //Find the feedback and delete it
         try {
-            BaseDocument doc = arangoDB.db(dbName).collection(collectionName).getDocument(asin, BaseDocument.class);
-            ArrayList<HashMap> array = (ArrayList<HashMap>)doc.getAttribute("values");
-            for (HashMap d : array) {
-                if (d.get("PersonId").equals(PersonId) && d.get("feedback").equals(feedback)){
+            BaseDocument doc = collection.getDocument(asin, BaseDocument.class);
+            ArrayList<BaseDocument> array = (ArrayList<BaseDocument>)doc.getAttribute("values");
+            for (BaseDocument d : array) {
+                if (d.getAttribute("PersonID").equals(PersonId) && d.getAttribute("feedback").equals(feedback)){
                     array.remove(d);
                 }
             }
             doc.updateAttribute("values", array);
-            System.out.println("Deletion done : " + asin + " with PersonId : " + PersonId);
+            System.out.println("Deletion done : " + asin + "with PersonId" + PersonId);
         }
         catch (ArangoDBException e) {
             e.printStackTrace();
@@ -246,27 +325,18 @@ public class Feedback {
                         array.add(copieDoc(inArray));
                     }
                     toAdd.addAttribute("values", array);
-                    arangoDB.db(dbName).collection(collectionName).insertDocument(toAdd);
+                    ArangoCollection collection = arangoDB.db(dbName).collection(collectionName);
+                    collection.insertDocument(toAdd);
                     System.out.println("Document inserted : " + toAdd.getKey());
-                    BaseDocument test = arangoDB.db(dbName).collection(collectionName).getDocument(toAdd.getKey(), BaseDocument.class);
-                    /*for (HashMap d : (ArrayList<HashMap>)test.getAttribute("values")) {
-                        System.out.println(d.get("PersonId"));
+                    /*for (BaseDocument d : (ArrayList<BaseDocument>)toAdd.getAttribute("values")) {
+                        System.out.println(d.getAttribute("PersonId"));
                     }*/
-
                 }
                 catch (ParseException e) {
                     e.printStackTrace();
                 }
             }
             reader.close();
-
-
-            addFeedback(dbName, collectionName, "asinTest", "PersonIdTest1", "feedback1");
-            addFeedback(dbName, collectionName, "asinTest", "PersonIdTest2", "feedback2");
-            updateFeedback(dbName, collectionName, "asinTest", "PersonIdTest1", "feedback1", "newPersonId", "newFeedback");
-            deleteFeedback(dbName, collectionName, "asinTest", "PersonIdTest2", "feedback2");
-            deleteFeedback(dbName, collectionName, "asinTest");
-
             System.exit(0);
 
         } catch (FileNotFoundException notFoundException) {

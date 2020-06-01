@@ -130,6 +130,8 @@ public class Queries {
                             System.out.println("        length: " + gDocument.getAttribute("length"));
                         });
                     });
+
+
                 });
 
             });
@@ -149,4 +151,29 @@ public class Queries {
   		BaseDocument.class);
   	*/
     }
+
+    //Fonctionne pas, le run s'arrête pas
+	private static ArangoCursor<BaseDocument> query4(ArangoDatabase db){
+		String queryTheTwoPersons = "RETURN MERGE(FOR person IN person_0_0\n" +
+				"FILTER person._id in(\n" +
+				"FOR link IN person_knows_person_0_0\n" +
+				"FILTER link.vertex in (\n" +
+				"FOR inv IN @@collection\n" +
+				"SORT inv.TotalPrice DESC\n" +
+				"LIMIT 1\n" +
+				"RETURN inv.PersonId)\n" +
+				"RETURN link._to)\n" +
+				"RETURN person, FOR person IN person_0_0\n" +
+				"FILTER person._id in(\n" +
+				"FOR link IN person_knows_person_0_0\n" +
+				"FILTER link.vertex in (\n" +
+				"FOR inv IN @@collection\n" +
+				"SORT inv.TotalPrice DESC\n" +
+				"LIMIT 1, 2\n" +
+				"RETURN inv.PersonId)\n" +
+				"RETURN link._to)\n" +
+				"RETURN person)";
+		ArangoCursor<BaseDocument> query = db.query(queryTheTwoPersons, new MapBuilder().put("@collection", "invoice").get(), new AqlQueryOptions(), BaseDocument.class);
+		return query;
+	}
 }
