@@ -5,7 +5,6 @@ import com.arangodb.ArangoDB;
 import com.arangodb.ArangoDBException;
 import com.arangodb.ArangoDatabase;
 import com.arangodb.entity.BaseDocument;
-import com.arangodb.model.AqlQueryOptions;
 import com.arangodb.util.MapBuilder;
 
 import java.util.ArrayList;
@@ -19,9 +18,11 @@ public class Queries {
 
         // Query 1 la date est rentree en dur pour des raisons techiques
         // et la periode de temps est passee de 6 mois a 6 mois pour obtenir des resultats plus parlants.
+        // La periode de temps est commentee pour les posts pour avoir des resultats
         // Le client considere est celui de cle 21990232560182.
         // La partie sur la categorie des produits n'est pas faite car pas comprise
         try {
+            System.out.println("Query 1 : BEGINNING");
             String query = "FOR c IN customer FILTER c._key == @key RETURN c";
             Map<String, Object> bindVars = new MapBuilder().put("key", "21990232560182").get();
             ArangoCursor<BaseDocument> cursor = db.query(query, bindVars, null, BaseDocument.class);
@@ -101,8 +102,38 @@ public class Queries {
                     }
 
                 });
+                final String query5 = "FOR per in Person " +
+                        "FILTER per._key == @key " +
+                        "RETURN per";
+                Map<String, Object> bindVars5 = new MapBuilder().put("key", aDocument.getKey()).get();
+                final ArangoCursor<BaseDocument> cursor5 = db.query(query5, bindVars5, null, BaseDocument.class);
+                cursor5.forEachRemaining(eDocument -> {
+                    final String query6 = "FOR pHCp in post_hasCreator_person " +
+                            "FILTER pHCp._to == @id " +
+                            "RETURN pHCp";
+                    Map<String, Object> bindVars6 = new MapBuilder().put("id", eDocument.getId()).get();
+                    final ArangoCursor<BaseDocument> cursor6 = db.query(query6, bindVars6, null, BaseDocument.class);
+                    cursor6.forEachRemaining(fDocument -> {
+                        final String query7 = "FOR po in Post " +
+                                "FILTER po._id == @post " + //AND po.CreateDate <= \"2020-06-01\" AND po.CreateDate >= DATE_SUBTRACT(\"2020-06-01\", 6, \"month\") " +
+                                "RETURN po";
+                        Map<String, Object> bindVars7 = new MapBuilder().put("post", fDocument.getAttribute("_from")).get();
+                        final ArangoCursor<BaseDocument> cursor7 = db.query(query7, bindVars7, null, BaseDocument.class);
+                        cursor7.forEachRemaining(gDocument -> {
+                            System.out.println("    Post : ");
+                            System.out.println("        key: " + gDocument.getKey());
+                            System.out.println("        id: " + gDocument.getAttribute("id"));
+                            System.out.println("        createDate: " + gDocument.getAttribute("createDate"));
+                            System.out.println("        location: " + gDocument.getAttribute("location"));
+                            System.out.println("        browserUsed: " + gDocument.getAttribute("browserUsed"));
+                            System.out.println("        content: " + gDocument.getAttribute("content"));
+                            System.out.println("        length: " + gDocument.getAttribute("length"));
+                        });
+                    });
+                });
 
             });
+            System.out.println("Query 1 END");
         } catch (ArangoDBException e) {
             System.err.println("Failed to execute query. " + e.getMessage());
         }
