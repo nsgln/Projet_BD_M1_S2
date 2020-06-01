@@ -1,0 +1,104 @@
+db._useDatabase("projet");
+db._collections();
+
+a = db._document("Order/35b26e6d-e450-4edc-9071-306cea10a083");
+
+aUpd = db._update(a, {
+	"_key": "erfaec62e-9875-948rg-6459-ttr87eabe77e4",
+  "OrderId": "erfaec62e-9875-948rg-6459-ttr87eabe77e4",
+  "PersonId": "10995116278721",
+  "OrderDate": "2018-08-05",
+  "TotalPrice": 1000.31,
+  "Orderline": [
+    {
+      "productId": "2675",
+      "asin": "B00BPRM2O4",
+      "title": "Large Exercise Mat. 72&quot; Wide x 72&quot; Long, Durable Rubber Fitness Mat. Designed For Home-Based Fitness and CARDIO Workouts Like Insanity, P90X, Shaun T's Rockin' Body, T25, X-TrainFit, Jillian Michaels 30 Day Shred, etc. Large Workout Mat With A Unique Fabric Finish That Provides Excellent Traction And Floor Protection. Can Be Used In Conjunction With The Square36 YOGA Mat. The Square36 CARDIO Mat - The BIG Exercise Mat- Step Into the Square.",
+      "price": 159.99,
+      "brand": "Reebok"
+    },
+    {
+      "productId": "1380",
+      "asin": "B000EQCVQ6",
+      "title": "Eureka! Apex 2XT Two-Person Tent",
+      "price": 175.16,
+      "brand": "Topper_(sports)"
+    },
+    {
+      "productId": "9665",
+      "asin": "B004H4VSI8",
+      "title": "IRONMAN HIGH CAPACITY GRAVITY 3000 INVERSION TABLE",
+      "price": 239.8,
+      "brand": "Wilson_Sporting_Goods"
+    },
+    {
+      "productId": "7603",
+      "asin": "B0017SC9H6",
+      "title": "Zero Tolerance Combat Folding Knife",
+      "price": 199,
+      "brand": "Tramontana_(sports_car)"
+    },
+    {
+      "productId": "887",
+      "asin": "B00BCLL8C0",
+      "title": "SportRack SR7018 Vista XL Rear Opening Cargo Box, 18-Cubic Feet, Black",
+      "price": 284.46,
+      "brand": "Fischer_(company)"
+    }
+  ]
+}
+);
+
+
+db._remove(aUpd);
+
+
+ins = db.Order.insert(
+{
+	"_key": "erfaec62e-9875-948rg-6459-ttr87eabe77e4", 
+  "OrderId": "erfaec62e-9875-948rg-6459-ttr87eabe77e4",
+  "PersonId": "10995116278721",
+  "OrderDate": "2018-08-05",
+  "TotalPrice": 1000.31,
+  "Orderline": [
+    {
+      "productId": "2675",
+      "asin": "B00BPRM2O4",
+      "title": "Large Exercise Mat. 72&quot; Wide x 72&quot; Long, Durable Rubber Fitness Mat. Designed For Home-Based Fitness and CARDIO Workouts Like Insanity, P90X, Shaun T's Rockin' Body, T25, X-TrainFit, Jillian Michaels 30 Day Shred, etc. Large Workout Mat With A Unique Fabric Finish That Provides Excellent Traction And Floor Protection. Can Be Used In Conjunction With The Square36 YOGA Mat. The Square36 CARDIO Mat - The BIG Exercise Mat- Step Into the Square.",
+      "price": 159.99,
+      "brand": "Reebok"
+    },
+    {
+      "productId": "1380",
+      "asin": "B000EQCVQ6",
+      "title": "Eureka! Apex 2XT Two-Person Tent",
+      "price": 175.16,
+      "brand": "Topper_(sports)"
+    },
+    {
+      "productId": "9665",
+      "asin": "B004H4VSI8",
+      "title": "IRONMAN HIGH CAPACITY GRAVITY 3000 INVERSION TABLE",
+      "price": 239.8,
+      "brand": "Wilson_Sporting_Goods"
+    },
+    {
+      "productId": "7603",
+      "asin": "B0017SC9H6",
+      "title": "Zero Tolerance Combat Folding Knife",
+      "price": 199,
+      "brand": "Tramontana_(sports_car)"
+    },
+    {
+      "productId": "887",
+      "asin": "B00BCLL8C0",
+      "title": "SportRack SR7018 Vista XL Rear Opening Cargo Box, 18-Cubic Feet, Black",
+      "price": 284.46,
+      "brand": "Fischer_(company)"
+    }
+  ]
+}
+);
+
+
+db._remove(ins);

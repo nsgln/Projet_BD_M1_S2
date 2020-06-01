@@ -1,0 +1,75 @@
+firstTome = db.Product.insert(
+{
+  "_key": "89879871202",
+  "asin": "89879871202",
+  "title": "Naruto Tome 2",
+  "price": "9.75",
+  "imgUrl": "https://images-na.ssl-images-amazon.com/images/I/81GuBF-GWXL.jpg",
+  "brand": "fnac"
+}
+);
+
+db._document(firstTome);
+
+
+thirdTome = db.Product.insert(
+{
+  "_key": "89879871203",
+  "asin": "89879871203",
+  "title": "Naruto Tome 3",
+  "price": "6.55",
+  "imgUrl": "https://images-na.ssl-images-amazon.com/images/I/711QaUsMZfL.jpg",
+  "brand": "amazon"
+}
+);
+
+db._document(thirdTome);
+
+
+eTTome = db.Product.insert(
+{
+  "_key": "89879871204",
+  "asin": "89879871204",
+  "title": "Naruto Tome 18",
+  "price": "6.75",
+  "imgUrl": "https://images-na.ssl-images-amazon.com/images/I/51a2eoXafeL._SX327_BO1,204,203,200_.jpg",
+  "brand": "amazon"
+}
+);
+
+db._document(eTTome);
+
+eTTomeUpdate = db._update(eTTome, {
+  "price": "7.65"
+  }
+);
+
+db._document(eTTomeUpdate);
+
+
+finalTome = db.Product.insert(
+{
+  "_key": "89879871272",
+  "asin": "89879871272",
+  "title": "Naruto Tome 72",
+  "price": "10.05",
+  "imgUrl": "https://lh3.googleusercontent.com/proxy/R_9DAkNcQKUVDmGOjvenxBBudFo8PXvbzG6YQJ_BXih7A6WDJXVbSwntT6NI7dBedKjJMLConlWeBXF9WF-vPKC7n42IDR-yBSHRWXpZCelpZTj2-_DS9H5IVnlJ1ZhIT0aSs3Rk",
+  "brand": "manga-shop"
+}
+);
+
+db._document(finalTome);
+
+finalTomeUpdate = db._update(finalTome, {
+  "price": "9.99"
+  }
+);
+
+db._document(finalTomeUpdate);
+
+
+db._remove(firstTome)
+db._remove(thirdTome);
+db._remove(eTTomeUpdate);
+db._remove(finalTomeUpdate);
+

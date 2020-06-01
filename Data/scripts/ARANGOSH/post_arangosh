@@ -1,0 +1,40 @@
+post = db.Post.insert(
+{
+  "_key": "1789987",
+  "id": "1789987",
+  "content": "About English Queen, i love dogs.",
+  "imageFile": "",
+  "browserUsed": "Chrome",
+  "length": "45",
+  "language": "uz",
+  "creationDate": "2012-05-12T12:54:07.336+0000",
+  "locationIP": "15.456.12.15"
+}
+);
+
+db._document(post);
+
+postU = db._update(post, {
+  "language": "en",
+  "browserUsed": "Internet Explorer"
+  }
+);
+
+secondPost = db.Post.insert(
+{
+  "_key": "17899886",
+  "id": "17899886",
+  "content": "About St Patrick, i love green.",
+  "imageFile": "",
+  "browserUsed": "Safari",
+  "length": "36",
+  "language": "en",
+  "creationDate": "2019-06-12T12:54:08.336+0000",
+  "locationIP": "15.453.11.15"
+}
+);
+
+db._document(secondPost);
+
+db._remove(postU)
+db._remove(secondPost);

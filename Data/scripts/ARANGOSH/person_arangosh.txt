@@ -1,0 +1,40 @@
+nina = db.Person.insert(
+{
+  "_key": "89870870008",
+  "id": "89870870008",
+  "firstName": "Nina",
+  "lastName": "Singlan",
+  "gender": "female",
+  "browserUsed": "Internet Explorer",
+  "locationIP": "1.138.51.89",
+  "place": "456",
+  "creationDate": "2020-08-01T20:20:20.097+0000",
+  "birthday": "1998-02-09"
+}
+);
+
+db._document(nina);
+
+camille = db.Person.insert(
+{
+  "_key": "89870870009",
+  "id": "89870870009",
+  "firstName": "Camille",
+  "lastName": "Bonin",
+  "gender": "female",
+  "browserUsed": "Mozilla Firefox",
+  "locationIP": "1.138.52.102",
+  "place": "123",
+  "creationDate": "2020-09-03T20:20:20.097+0000",
+  "birthday": "1998-01-01"
+}
+);
+db._document(camille);
+
+camilleU = db._update(camille, {
+  "birthday": "1998-02-01"
+  }
+);
+
+db._remove(nina)
+db._remove(camilleU);
