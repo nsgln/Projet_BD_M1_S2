@@ -30,3 +30,5 @@ target/
 
 Data/Invoice
 Data/Feedback
+Data/Graph&JSON/Order
+Data/Graph&JSON/SocialNetwork/unzip
