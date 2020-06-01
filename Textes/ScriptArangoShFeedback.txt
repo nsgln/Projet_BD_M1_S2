@@ -1,0 +1,22 @@
+Scripts Shell Feedback
+
+Pour se placer dans la base « projet » : db._useDatabase(« projet »)
+
+Pour se placer dans la collection « feedback » : db._collection(« feedback »)
+
+Pour récupérer un document de clé « B002E6R5EM » : db.feedback.document(«  B002E6R5EM »)
+
+Pour supprimer un document de clé « B002E6R5EM » : db.feedback.remove(«  B002E6R5EM »)
+
+Pour enregistrer un document de clé «test» : 
+db.feedback.save({_key : « test », _id : « test », asin : « test », values : [{feedback : « feed1 », PersonId : « pers1 »}, {« feedback : « feed2 », PersonId : « pers2 »}]})
+ou : 
+db.feedback.insert({_key : « test », _id : « test », asin : « test », values : [{feedback : « feed1 », PersonId : « pers1 »}, {« feedback : « feed2 », PersonId : « pers2 »}]})
+
+Pour modifier le champs « values » d’un document de clé « test » :
+test  = db.feedback.document(«  B002E6R5EM ») puis :
+db._update(test, {values:[{PersonId:"pres3", feedback:"feed3"}]})
+
+Pour rajouter un feedback à une collection quand sa clé existe déjà, il faut mettre à jour la valeur de « values » en recopiant toutes les valeurs précédentes. 
+De même, pour en supprimer un, il faut mettre à jour « values » en recopiant tous les autres sauf celui là. 
+Il en va encore de même pour ne modifier qu’un seul feedback. 
