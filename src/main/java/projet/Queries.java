@@ -5,6 +5,7 @@ import com.arangodb.ArangoDB;
 import com.arangodb.ArangoDBException;
 import com.arangodb.ArangoDatabase;
 import com.arangodb.entity.BaseDocument;
+import com.arangodb.model.AqlQueryOptions;
 import com.arangodb.util.MapBuilder;
 
 import java.util.ArrayList;
