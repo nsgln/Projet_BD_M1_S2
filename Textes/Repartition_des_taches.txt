@@ -1,0 +1,24 @@
+Répartition des tâches : 
+
+Nous avons pris la décision de nous diviser le projet de la façon suivante.
+
+Partie 2 : 
+	Camille Bonnin : Question 1 à 12.
+	Nina Singlan : Question 13 à 24.
+	Romain Michelucci : Question 25 à 36.
+
+Partie 3 :
+	Camille Bonnin : données key/value.
+	Romain Michelucci : données JSON et données Graphes.
+ 	Nina Singlan : données orientées colonnes et données relationnelles.
+
+Partie 4 : 
+	Camille Bonnin : partie key/value.
+	Romain Michelucci : partie JSON et partie Graphe.
+	Nina Singlan : partie orientée colonne et partie relationnelle.
+
+Partie 5 : 
+	Camille Bonnin : reqûete 1, 2, 3 et 10.
+	Nina Singlan : requête 4, 5 et 6.
+	Romain Michelucci : requête 7, 8, et 9.
+Malheureusement, les requêtes n'ont pas pu être terminées.
