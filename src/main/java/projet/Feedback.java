@@ -104,7 +104,7 @@ public class Feedback {
                 }
             }
             doc.updateAttribute("values", array);
-            System.out.println("Deletion done : " + asin + "with PersonId" + PersonId);
+            System.out.println("Deletion done : " + asin + " with PersonId : " + PersonId);
         }
         catch (ArangoDBException e) {
             e.printStackTrace();
